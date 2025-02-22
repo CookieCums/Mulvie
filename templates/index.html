@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Library</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Media Library</h1>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search titles...">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" width="24" height="24">
+                    <path fill="currentColor" d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+            </button>
+        </div>
+        <button class="request-btn" onclick="openModal()">Request File</button>
+    </header>
+
+    <main>
+        <div class="grid-container">
+            {% for video in videos %}
+            <div class="card">
+                <div class="card-image">
+                    <img src="{{ video.thumbnail }}" alt="{{ video.title }}">
+                </div>
+                <div class="card-content">
+                    <h3>{{ video.title }}</h3>
+                    {% if video.single_file %}
+                        <a href="{{ video.download_link }}" class="download-btn" target="_blank">
+                            Download
+                            <svg viewBox="0 0 24 24" width="20" height="20">
+                                <path fill="currentColor" d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/>
+                            </svg>
+                        </a>
+                    {% else %}
+                        <div class="season-buttons">
+                            <a href="{{ url_for('show_seasons', title=video.title) }}" class="view-all-btn">
+                                View All Seasons ({{ video.file_count }})
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Request Content</h2>
+            <form id="requestForm">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="request">Request</label>
+                    <textarea id="request" name="request" rows="4" required></textarea>
+                </div>
+                <button type="submit">Submit Request</button>
+            </form>
+            <div id="message"></div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

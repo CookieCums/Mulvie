@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ video.title }} - Seasons</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="seasons-container">
+        <a href="{{ url_for('index') }}" class="back-btn">
+            <svg viewBox="0 0 24 24" width="24" height="24">
+                <path fill="currentColor" d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+            </svg>
+            Back to Library
+        </a>
+        
+        <div class="video-info">
+            <img src="{{ video.thumbnail }}" alt="{{ video.title }}">
+            <div>
+                <h1>{{ video.title }}</h1>
+                <p>All Files</p>
+            </div>
+        </div>
+
+        <div class="season-grid">
+            {% for season_name, link in video.files.items()|sort %}
+            <a href="{{ link }}" class="season-button" target="_blank">
+                {{ season_name }}
+                <svg viewBox="0 0 24 24" width="20" height="20">
+                    <path fill="currentColor" d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/>
+                </svg>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
