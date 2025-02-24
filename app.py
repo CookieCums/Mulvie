@@ -227,4 +227,4 @@ def show_seasons(title):
 
 if __name__ == '__main__':
     init_db()
-    app.run(debug=True, port=5000, host='0.0.0.0')
+    app.run(debug=True, port=10000, host='0.0.0.0')
