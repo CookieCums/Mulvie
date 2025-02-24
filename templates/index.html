@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=0.6, maximum-scale=0.6, user-scalable=no">
     <title>Media Library</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
@@ -18,8 +18,29 @@
                 </svg>
             </button>
         </div>
-        <button class="request-btn" onclick="openModal()">Request File</button>
+        <div class="header-buttons">
+            <a href="https://linktr.ee/YourUsername" target="_blank" class="donate-btn">
+                <svg viewBox="0 0 24 24" width="18" height="18">
+                    <path fill="currentColor" d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"/>
+                </svg>
+                Support
+            </a>
+            <button class="request-btn" onclick="openModal()">
+                <svg viewBox="0 0 24 24" width="18" height="18">
+                    <path fill="currentColor" d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+                </svg>
+                Request File
+            </button>
+        </div>
     </header>
+
+    <div id="mobileNotice" class="mobile-notice">
+        <div class="notice-content">
+            <h3>💡 Tip for Better Experience</h3>
+            <p>Switch to "Desktop site" in your browser settings for the best viewing experience!</p>
+            <button onclick="dismissNotice()">Got it!</button>
+        </div>
+    </div>
 
     <main>
         <div class="grid-container">
@@ -37,11 +58,17 @@
                                 <path fill="currentColor" d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/>
                             </svg>
                         </a>
+                        <button class="report-btn" onclick="reportBrokenLink('{{ video.title }}', '{{ video.download_link }}')">
+                            broken link?
+                        </button>
                     {% else %}
                         <div class="season-buttons">
                             <a href="{{ url_for('show_seasons', title=video.title) }}" class="view-all-btn">
-                                View All Seasons ({{ video.file_count }})
+                                All(Files) ({{ video.file_count }})
                             </a>
+                            <button class="report-btn" onclick="reportBrokenLink('{{ video.title|tojson }}' , '{{ video.files|tojson }}')">
+                                Report Broken Link
+                            </button>
                         </div>
                     {% endif %}
                 </div>

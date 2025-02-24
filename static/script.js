@@ -1,4 +1,23 @@
+function isMobileDevice() {
+    return window.innerWidth <= 800; // Simplified check
+}
+
+function showMobileNotice() {
+    const notice = document.getElementById('mobileNotice');
+    if (isMobileDevice()) {
+        notice.style.display = 'block';
+        console.log('Mobile device detected, showing notice'); // Debug log
+    }
+}
+
+function dismissNotice() {
+    const notice = document.getElementById('mobileNotice');
+    notice.style.display = 'none';
+    localStorage.setItem('noticeDismissed', 'true');
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    showMobileNotice(); // Call this first
     const searchInput = document.getElementById('searchInput');
     const cards = document.querySelectorAll('.card');
 
@@ -64,3 +83,31 @@ document.getElementById('requestForm').addEventListener('submit', async (e) => {
         document.getElementById('message').style.color = '#ff4444';
     }
 });
+
+async function reportBrokenLink(title, links) {
+    const timestamp = new Date().toISOString();
+    const report = {
+        title: title,
+        links: links,
+        reported_at: timestamp
+    };
+
+    try {
+        const response = await fetch('/report_broken_link', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(report)
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            alert('Thank you! The broken link has been reported.');
+        } else {
+            alert('Failed to report broken link. Please try again.');
+        }
+    } catch (error) {
+        alert('Error reporting broken link: ' + error.message);
+    }
+}

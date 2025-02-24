@@ -2,8 +2,6 @@ from flask import Flask, render_template, request
 import json
 import sqlite3
 from typing import Dict, List, Optional
-import json
-
 def init_db():
     conn = sqlite3.connect('mulvie.db')
     c = conn.cursor()
@@ -135,6 +133,37 @@ def delete_media(media_id: int) -> bool:
     finally:
         conn.close()
 
+def get_existing_media(title: str) -> Optional[Dict]:
+    conn = sqlite3.connect('mulvie.db')
+    c = conn.cursor()
+    
+    c.execute('''
+        SELECT m.id, m.title, m.thumbnail_url, 
+               GROUP_CONCAT(e.name), GROUP_CONCAT(e.link)
+        FROM media m
+        LEFT JOIN episodes e ON m.id = e.media_id
+        WHERE m.title = ?
+        GROUP BY m.id
+    ''', (title,))
+    
+    row = c.fetchone()
+    if row:
+        media_id, title, thumbnail, names, links = row
+        names_list = names.split(',') if names else []
+        links_list = links.split(',') if links else []
+        episodes = [{'name': n, 'link': l} for n, l in zip(names_list, links_list)]
+        media = {
+            'id': media_id,
+            'title': title,
+            'thumbnail': thumbnail,
+            'episodes': episodes
+        }
+    else:
+        media = None
+    
+    conn.close()
+    return media
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -166,6 +195,28 @@ def handle_request():
     except Exception as e:
         return {'success': False, 'error': str(e)}
 
+@app.route('/report_broken_link', methods=['POST'])
+def report_broken_link():
+    try:
+        report_data = request.json
+        with open('broken_links.json', 'a+') as f:
+            f.seek(0)
+            try:
+                content = f.read()
+                reports = json.loads(content) if content else []
+            except json.decoder.JSONDecodeError:
+                reports = []
+            
+            reports.append(report_data)
+            
+            f.seek(0)
+            f.truncate()
+            json.dump(reports, f, indent=2)
+        
+        return {'success': True}
+    except Exception as e:
+        return {'success': False, 'error': str(e)}
+
 @app.route('/seasons/<title>')
 def show_seasons(title):
     videos = get_all_media()
@@ -175,5 +226,5 @@ def show_seasons(title):
     return 'Video not found', 404
 
 if __name__ == '__main__':
-    init_db()  # Initialize database on startup
+    init_db()
     app.run(debug=True, port=5000, host='0.0.0.0')
