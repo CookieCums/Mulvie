@@ -1,12 +1,12 @@
 function isMobileDevice() {
-    return window.innerWidth <= 800; // Simplified check
+    return window.innerWidth <= 800;
 }
 
 function showMobileNotice() {
     const notice = document.getElementById('mobileNotice');
     if (isMobileDevice()) {
         notice.style.display = 'block';
-        console.log('Mobile device detected, showing notice'); // Debug log
+        console.log('Mobile device detected, showing notice');
     }
 }
 
@@ -17,7 +17,7 @@ function dismissNotice() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    showMobileNotice(); // Call this first
+    showMobileNotice();
     const searchInput = document.getElementById('searchInput');
     const cards = document.querySelectorAll('.card');
 
@@ -45,6 +45,22 @@ function openModal() {
 function closeModal() {
     document.getElementById('modal').style.display = 'none';
     document.getElementById('message').textContent = '';
+}
+
+function openAboutModal() {
+    document.getElementById('aboutModal').style.display = 'flex';
+}
+
+function closeAboutModal() {
+    document.getElementById('aboutModal').style.display = 'none';
+}
+
+window.onclick = function(event) {
+    if (event.target.id === 'aboutModal') {
+        closeAboutModal();
+    } else if (event.target.id === 'modal') {
+        closeModal();
+    }
 }
 
 document.getElementById('requestForm').addEventListener('submit', async (e) => {

@@ -9,7 +9,6 @@
 </head>
 <body>
     <header>
-        <h1>Media Library</h1>
         <div class="search-container">
             <input type="text" id="searchInput" placeholder="Search titles...">
             <button class="search-btn">
@@ -19,7 +18,7 @@
             </button>
         </div>
         <div class="header-buttons">
-            <a href="https://linktr.ee/YourUsername" target="_blank" class="donate-btn">
+            <a href="https://linktr.ee/spookiepooki" target="_blank" class="donate-btn">
                 <svg viewBox="0 0 24 24" width="18" height="18">
                     <path fill="currentColor" d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"/>
                 </svg>
@@ -29,7 +28,13 @@
                 <svg viewBox="0 0 24 24" width="18" height="18">
                     <path fill="currentColor" d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
                 </svg>
-                Request File
+                Request
+            </button>
+            <button class="about-btn" onclick="openAboutModal()">
+                <svg viewBox="0 0 24 24" width="18" height="18">
+                    <path fill="currentColor" d="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
+                </svg>
+                About
             </button>
         </div>
     </header>
@@ -51,26 +56,28 @@
                 </div>
                 <div class="card-content">
                     <h3>{{ video.title }}</h3>
-                    {% if video.single_file %}
-                        <a href="{{ video.download_link }}" class="download-btn" target="_blank">
-                            Download
-                            <svg viewBox="0 0 24 24" width="20" height="20">
-                                <path fill="currentColor" d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/>
-                            </svg>
-                        </a>
-                        <button class="report-btn" onclick="reportBrokenLink('{{ video.title }}', '{{ video.download_link }}')">
-                            broken link?
-                        </button>
-                    {% else %}
-                        <div class="season-buttons">
-                            <a href="{{ url_for('show_seasons', title=video.title) }}" class="view-all-btn">
-                                All(Files) ({{ video.file_count }})
+                    <div class="button-container">
+                        {% if video.single_file %}
+                            <a href="{{ video.download_link }}" class="download-btn" target="_blank">
+                                Download
+                                <svg viewBox="0 0 24 24" width="20" height="20">
+                                    <path fill="currentColor" d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/>
+                                </svg>
                             </a>
-                            <button class="report-btn" onclick="reportBrokenLink('{{ video.title|tojson }}' , '{{ video.files|tojson }}')">
+                            <button class="report-btn" onclick="reportBrokenLink('{{ video.title }}', '{{ video.download_link }}')">
                                 Report Broken Link
                             </button>
-                        </div>
-                    {% endif %}
+                        {% else %}
+                            <div class="season-buttons">
+                                <a href="{{ url_for('show_seasons', title=video.title) }}" class="view-all-btn">
+                                    All(Files) ({{ video.file_count }})
+                                </a>
+                                <button class="report-btn" onclick="reportBrokenLink('{{ video.title|tojson }}' , '{{ video.files|tojson }}')">
+                                    Report Broken Link
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
             {% endfor %}
@@ -97,6 +104,36 @@
                 <button type="submit">Submit Request</button>
             </form>
             <div id="message"></div>
+        </div>
+    </div>
+
+
+    <div id="aboutModal" class="modal">
+        <div class="modal-content about-content">
+            <span class="close" onclick="closeAboutModal()">&times;</span>
+            <h2>About Media Library</h2>
+            <div class="about-text">
+                <p>Welcome to our Media Library! This platform serves as a comprehensive collection of media content from various sources:</p>
+                
+                <h3>Content Sources:</h3>
+                <ul>
+                    <li>🎬 Direct Uploads: Files uploaded and uploaded by us</li>
+                    <li>🔍 Indexed Content: Links to content from across the web</li>
+                    <li>📺 User Submissions: Content suggested by our community</li>
+                </ul>
+
+                <h3>Important Notes:</h3>
+                <ul>
+                    <li>for copyrighted related content email us at gs930123@gmail.com</li>
+                    <li>Some links are indexed from public sources</li>
+                    <li>Report broken links to help maintain quality</li>
+                    <li>Request missing content through the request form</li>
+                </ul>
+
+                <div class="disclaimer">
+                    <p>⚠️ Disclaimer: This is a media hosting site for indexed and hosted content from various sources.</p>
+                </div>
+            </div>
         </div>
     </div>
 
