@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import requests
 import sqlite3
 from typing import Dict, List, Optional
+import json
 
 def init_db():
     conn = sqlite3.connect('mulvie.db')
@@ -168,10 +169,26 @@ def get_existing_media(title: str) -> Optional[Dict]:
 
 app = Flask(__name__)
 
+ITEMS_PER_PAGE = 15
+
 @app.route('/')
 def index():
     videos = get_all_media()
-    return render_template('index.html', videos=videos)
+    initial_videos = videos[:ITEMS_PER_PAGE]
+    return render_template('index.html', videos=initial_videos, total_count=len(videos))
+
+@app.route('/api/load_more')
+def load_more():
+    page = int(request.args.get('page', 1))
+    videos = get_all_media()
+    start_idx = page * ITEMS_PER_PAGE
+    end_idx = start_idx + ITEMS_PER_PAGE
+    next_batch = videos[start_idx:end_idx]
+    
+    return jsonify({
+        'videos': next_batch,
+        'hasMore': end_idx < len(videos)
+    })
 
 @app.route('/submit_request', methods=['POST'])
 def handle_request():
@@ -231,4 +248,4 @@ def show_seasons(title):
 
 if __name__ == '__main__':
     init_db()
-    app.run(port=10000, host='0.0.0.0')
+    app.run(debug=True, port=5000, host='0.0.0.0')

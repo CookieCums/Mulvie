@@ -48,11 +48,11 @@
     </div>
 
     <main>
-        <div class="grid-container">
+        <div class="grid-container" id="videoGrid">
             {% for video in videos %}
             <div class="card">
                 <div class="card-image">
-                    <img src="{{ video.thumbnail }}" alt="{{ video.title }}">
+                    <img src="{{ video.thumbnail }}" loading="lazy" alt="{{ video.title }}">
                 </div>
                 <div class="card-content">
                     <h3>{{ video.title }}</h3>
@@ -81,6 +81,10 @@
                 </div>
             </div>
             {% endfor %}
+        </div>
+        <div class="load-more-container">
+            <button id="loadMoreBtn" class="load-more-btn">Load More</button>
+            <div id="loading" class="loading-spinner" style="display: none;"></div>
         </div>
     </main>
 

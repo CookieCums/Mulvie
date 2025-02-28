@@ -127,3 +127,81 @@ async function reportBrokenLink(title, links) {
         alert('Error reporting broken link: ' + error.message);
     }
 }
+
+let currentPage = 0;
+const loadMoreBtn = document.getElementById('loadMoreBtn');
+const loading = document.getElementById('loading');
+const videoGrid = document.getElementById('videoGrid');
+
+async function loadMoreVideos() {
+    try {
+        loadMoreBtn.style.display = 'none';
+        loading.style.display = 'block';
+        
+        const response = await fetch(`/api/load_more?page=${currentPage + 1}`);
+        const data = await response.json();
+        
+        if (data.videos.length) {
+            currentPage++;
+            
+            data.videos.forEach(video => {
+                const card = createVideoCard(video);
+                videoGrid.appendChild(card);
+            });
+            
+            if (!data.hasMore) {
+                loadMoreBtn.style.display = 'none';
+            } else {
+                loadMoreBtn.style.display = 'block';
+            }
+        } else {
+            loadMoreBtn.style.display = 'none';
+        }
+    } catch (error) {
+        console.error('Error loading more videos:', error);
+    } finally {
+        loading.style.display = 'none';
+    }
+}
+
+function createVideoCard(video) {
+    const card = document.createElement('div');
+    card.className = 'card';
+    
+    card.innerHTML = `
+        <div class="card-image">
+            <img src="${video.thumbnail}" loading="lazy" alt="${video.title}">
+        </div>
+        <div class="card-content">
+            <h3>${video.title}</h3>
+            <div class="button-container">
+                ${video.single_file ? `
+                    <a href="${video.download_link}" class="download-btn" target="_blank">
+                        Download
+                        <svg viewBox="0 0 24 24" width="20" height="20">
+                            <path fill="currentColor" d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/>
+                        </svg>
+                    </a>
+                    <button class="report-btn" onclick="reportBrokenLink('${video.title}', '${video.download_link}')">
+                        Report Broken Link
+                    </button>
+                ` : `
+                    <div class="season-buttons">
+                        <a href="/seasons/${encodeURIComponent(video.title)}" class="view-all-btn">
+                            All Files (${video.file_count})
+                        </a>
+                        <button class="report-btn" onclick="reportBrokenLink('${video.title}', ${JSON.stringify(video.files)})">
+                            Report Broken Link
+                        </button>
+                    </div>
+                `}
+            </div>
+        </div>
+    `;
+    
+    return card;
+}
+
+if (loadMoreBtn) {
+    loadMoreBtn.addEventListener('click', loadMoreVideos);
+}
